@@ -190,22 +190,15 @@ public class SessionTest extends Configured implements Tool {
 
     AtomicBoolean shutdown = new AtomicBoolean(false);
     Monitor monitor = null;
-    try {
-      DAGClient statusClient = tezClient.submitDAG(dag);
+    DAGClient statusClient = tezClient.submitDAG(dag);
 
-      //Start monitor (note: not shutting down thread)
-      monitor = new Monitor(statusClient, shutdown);
+    //Start monitor (note: not shutting down thread)
+    monitor = new Monitor(statusClient, shutdown);
 
-      DAGStatus status = statusClient.waitForCompletionWithStatusUpdates(
-          EnumSet.of(StatusGetOpts.GET_COUNTERS));
+    DAGStatus status = statusClient.waitForCompletionWithStatusUpdates(
+        EnumSet.of(StatusGetOpts.GET_COUNTERS));
 
-      return (status.getState() == DAGStatus.State.SUCCEEDED) ? 0 : -1;
-    } finally {
-      if (tezClient != null) {
-        tezClient.stop();
-      }
-      shutdown.set(true);
-    }
+    return (status.getState() == DAGStatus.State.SUCCEEDED) ? 0 : -1;
   }
 
   public static class DummyProcessor extends SimpleMRProcessor {
